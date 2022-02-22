@@ -1,0 +1,33 @@
+plane.png
+size: 1388, 94
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+plane0
+  rotate: false
+  xy: 0, 0
+  size: 347, 94
+  orig: 347, 94
+  offset: 0, 0
+  index: -1
+plane1
+  rotate: false
+  xy: 347, 0
+  size: 347, 94
+  orig: 347, 94
+  offset: 0, 0
+  index: -1
+plane2
+  rotate: false
+  xy: 694, 0
+  size: 347, 94
+  orig: 347, 94
+  offset: 0, 0
+  index: -1
+plane3
+  rotate: false
+  xy: 1041, 0
+  size: 347, 94
+  orig: 347, 94
+  offset: 0, 0
+  index: -1
