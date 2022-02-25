@@ -2,7 +2,7 @@
 .gradle
 gradle-app.setting
 build/
-
+*.txt
 ## Java:
 *.class
 *.war
