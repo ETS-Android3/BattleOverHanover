@@ -18,7 +18,7 @@ public class DesktopLauncher {
 
 	private static LwjglApplicationConfiguration getDefaultConfiguration() {
 		LwjglApplicationConfiguration configuration = new LwjglApplicationConfiguration();
-		configuration.title = "Animation";
+		configuration.title = "Battle Over Hanover";
 		configuration.width = (int) BattleOverHanover.WIDTH;
 		configuration.height = (int) BattleOverHanover.HEIGHT;
 		//// This prevents a confusing error that would appear after exiting normally.
