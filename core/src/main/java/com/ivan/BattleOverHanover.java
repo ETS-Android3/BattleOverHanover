@@ -17,6 +17,7 @@ public class BattleOverHanover extends Game {
 
     public static final float WIDTH = 800;
     public static final float HEIGHT = 580;
+    public static final float SHIELD_HEALTH_TIME = 5;
     public OrthographicCamera camera;
     public FitViewport fitViewport;
     public SpriteBatch batch;
