@@ -134,7 +134,9 @@ public class Main extends ScreenAdapter {
 				pointBoundingBox.set(pillar.x, 0, 1, game.HEIGHT);
 			}
 			if (planeBoundingBox.overlaps(pillarBoundingBox)){
-				gameOver();
+				if (shieldTimeStamp+ game.SHIELD_HEALTH_TIME < gameTimeAFloat){
+					gameOver();
+				}
 			}
 			if (planeBoundingBox.overlaps(pointBoundingBox)){
 				overlapsedPillarPoints +=1;
