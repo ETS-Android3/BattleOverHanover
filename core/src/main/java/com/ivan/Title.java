@@ -55,7 +55,7 @@ public class Title extends ScreenAdapter {
         int[] explosionY;
         int[] explosionX;
         public static Music backgroundMusic;
-        public Sound explosionSound;
+        public Music explosionSound;
         private GlyphLayout glyphLayout;
         private GlyphLayout glyphLayoutSub;
 
@@ -89,11 +89,12 @@ public class Title extends ScreenAdapter {
             skyMaximum = Gdx.graphics.getHeight() - 400;
             explosionY = new int[]{calculateY(), calculateY(), calculateY(), calculateY(), calculateY(), calculateY()};
             explosionX = new int[]{calculateX(), calculateX(), calculateX(), calculateX(), calculateX(), calculateX()};
-            backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("AirBattleRaidSound.wav"));
+            backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("AirBackground.mp3"));
             backgroundMusic.play();
             backgroundMusic.setVolume(0.25f);
-            explosionSound = Gdx.audio.newSound(Gdx.files.internal("bomb.wav"));
-
+            explosionSound = Gdx.audio.newMusic(Gdx.files.internal("AirBattleRaidSound.mp3"));
+            explosionSound.play();
+            explosionSound.setVolume(0.05f);
             glyphLayout = new GlyphLayout();
             glyphLayout.setText(game.wargate, "battle over hanover", game.wargate.getColor(), 0, Align.center, false);
 
@@ -165,7 +166,7 @@ public class Title extends ScreenAdapter {
                 fighterPlaneAnimation++;
             }
 
-            if (x == Gdx.graphics.getWidth() + +750) {
+            if (x >= game.WIDTH*2) {
                 //Si se sale del borde los aviones se generan a la izquierda
                 for (int i = 0; i < airplaneFormation.length; i++) {
                     airplaneFormation[i] = calculateY();
@@ -181,7 +182,6 @@ public class Title extends ScreenAdapter {
                         explosionX[i] = calculateX();
                     }
 
-                    explosionSound.play(0.2f);
                     airExplosionAnimation2 = 1;
                 } else {
                     airExplosionAnimation2++;
@@ -207,7 +207,6 @@ public class Title extends ScreenAdapter {
                         explosionX[i] = calculateX();
                     }
 
-                    explosionSound.play(0.2f);
                     airExplosionAnimation3 = 1;
                 } else {
                     airExplosionAnimation3++;
@@ -221,7 +220,6 @@ public class Title extends ScreenAdapter {
                     for (int i = 0; i < 2; i++) {
                         explosionX[i] = calculateX();
                     }
-                    explosionSound.play(0.2f);
                     airExplosionAnimation = 1;
                 } else {
                     airExplosionAnimation++;
