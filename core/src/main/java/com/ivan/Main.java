@@ -1,31 +1,27 @@
 package com.ivan;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class Main extends ScreenAdapter {
 
-	
 	private final BattleOverHanover game;
+	private float gameTimeAFloat;
 	private float terrainOffset = 0;
 	private float planeAnimTime;
 	private float backgroundOffset = 0;
 	private float damping = 0.99f;
-	private SpriteBatch batch;
 	private TextureRegion backgroundTextureRegion;
 	private FPSLogger fpsLogger;
 	private TextureRegion belowGrassTexture;
@@ -56,7 +52,6 @@ public class Main extends ScreenAdapter {
 
 	@Override
 	public void show() {
-		batch = new SpriteBatch();
 		fpsLogger = new FPSLogger();
 
 
@@ -68,8 +63,9 @@ public class Main extends ScreenAdapter {
 		aboveGrassTexture = new TextureRegion(belowGrassTexture);
 		aboveGrassTexture.flip(true, true);
 
-		pillarUp = textureAtlas.findRegion("rockGrassUp");
-		pillarDown = textureAtlas.findRegion("rockGrassDown");
+		pillarUp = new TextureRegion(new Texture("pillar.png"));
+		pillarDown = new TextureRegion(pillarUp);
+		pillarDown.flip(true, true);
 
 		planeTexture0 = usMustang.findRegion("plane0");
 		planeTexture0.flip(true, false);
@@ -107,11 +103,13 @@ public class Main extends ScreenAdapter {
 	@Override
 	public void render(float delta) {
 		fpsLogger.log();
-		updateScene();
+		updateScene(delta);
 		drawScene();
 	}
 
-	private void updateScene(){
+
+	private void updateScene(float delta){
+		gameTimeAFloat+= delta;
 		planeBoundingBox.set(planePositionVector.x+ game.BOX_ADJUSTMENT, planePositionVector.y+ game.BOX_ADJUSTMENT, planeTexture0.getRegionWidth()-(2*game.BOX_ADJUSTMENT), planeTexture0.getRegionHeight()-(2*game.BOX_ADJUSTMENT));
 
 		if (planePositionVector.y > (game.HEIGHT - aboveGrassTexture.getRegionHeight()) || planePositionVector.y < (belowGrassTexture.getRegionHeight())/2){
@@ -152,33 +150,37 @@ public class Main extends ScreenAdapter {
 		}
 	}
 	private  void drawScene(){
+		Gdx.gl.glClearColor(20,147,146,0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		game.camera.update();
-		batch.setProjectionMatrix(game.camera.combined);
-		batch.begin();
-		batch.draw(backgroundTextureRegion, backgroundOffset, 0);
-		batch.draw(backgroundTextureRegion, backgroundOffset - backgroundTextureRegion.getRegionWidth(), 0);
+		game.batch.setProjectionMatrix(game.camera.combined);
+		game.batch.begin();
+		game.batch.draw(backgroundTextureRegion, backgroundOffset, 0);
+		game.batch.draw(backgroundTextureRegion, backgroundOffset - backgroundTextureRegion.getRegionWidth(), 0);
 
 		for (Vector2 pillar : pillarPosition){
 			if (pillar.y == 1){
-				batch.draw(pillarUp, pillar.x, 0);
+				game.batch.draw(pillarUp, pillar.x, 0);
 			} else {
-				batch.draw(pillarDown, pillar.x, game.HEIGHT - pillarDown.getRegionHeight());
+				game.batch.draw(pillarDown, pillar.x, game.HEIGHT - pillarDown.getRegionHeight());
 			}
 		}
 
-		batch.draw(belowGrassTexture, terrainOffset, 0);
-		batch.draw(belowGrassTexture, terrainOffset - belowGrassTexture.getRegionWidth(), 0);
-		batch.draw(aboveGrassTexture, terrainOffset, game.HEIGHT-aboveGrassTexture.getRegionHeight());
-		batch.draw(aboveGrassTexture, terrainOffset - aboveGrassTexture.getRegionWidth(), game.HEIGHT-aboveGrassTexture.getRegionHeight());
+		game.batch.draw(belowGrassTexture, terrainOffset, 0);
+		game.batch.draw(belowGrassTexture, terrainOffset - belowGrassTexture.getRegionWidth(), 0);
+		game.batch.draw(aboveGrassTexture, terrainOffset, game.HEIGHT-aboveGrassTexture.getRegionHeight());
+		game.batch.draw(aboveGrassTexture, terrainOffset - aboveGrassTexture.getRegionWidth(), game.HEIGHT-aboveGrassTexture.getRegionHeight());
 
-		batch.draw(planeAnimation.getKeyFrame(planeAnimTime), planePositionVector.x, planePositionVector.y);
-		batch.end();
+
+		game.batch.draw(planeAnimation.getKeyFrame(planeAnimTime), planePositionVector.x, planePositionVector.y);
+
+
+		game.batch.end();
 	}
 
 	@Override
 	public void dispose() {
-		batch.dispose();
+		game.batch.dispose();
 		textureAtlas.dispose();
 	}
 
