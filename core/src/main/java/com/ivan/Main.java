@@ -162,7 +162,7 @@ public class Main extends ScreenAdapter {
 		game.camera.update();
 		game.batch.setProjectionMatrix(game.camera.combined);
 		game.batch.begin();
-		game.batch.draw(backgroundTextureRegion, backgroundOffset, 0);
+		game.batch.draw(backgroundTextureRegion, backgroundOffset - backgroundTextureRegion.getRegionWidth() + game.WIDTH, 0);
 		game.batch.draw(backgroundTextureRegion, backgroundOffset - backgroundTextureRegion.getRegionWidth(), 0);
 
 		for (Vector2 pillar : pillarPosition){
