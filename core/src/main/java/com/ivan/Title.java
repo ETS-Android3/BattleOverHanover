@@ -41,7 +41,6 @@ public class Title extends ScreenAdapter {
         Texture fence;
         Texture moon;
         Texture[] touchToContinue = new Texture[3];
-        BitmapFont wargate;
         int x = 0;
         int airExplosionAnimation = 1;
         int airExplosionAnimation2 = 1;
@@ -59,11 +58,10 @@ public class Title extends ScreenAdapter {
         int skyMaximum;
         int[] explosionY;
         int[] explosionX;
-        Music backgroundMusic;
-        Sound explosionSound;
+        public static Music backgroundMusic;
+        public Sound explosionSound;
         private int continueAnimation = 0;
         private GlyphLayout glyphLayout;
-        private BitmapFont wargateSubtitle;
         private GlyphLayout glyphLayoutSub;
 
 
@@ -100,16 +98,17 @@ public class Title extends ScreenAdapter {
             backgroundMusic.play();
             backgroundMusic.setVolume(0.25f);
             explosionSound = Gdx.audio.newSound(Gdx.files.internal("bomb.wav"));
-            wargate = new BitmapFont(Gdx.files.internal("wargatesubtitle.fnt"));
+
             glyphLayout = new GlyphLayout();
-            glyphLayout.setText(wargate, "battle over hanover", wargate.getColor(), 0, Align.center, false);
-            wargateSubtitle = new BitmapFont(Gdx.files.internal("WargateSubFont.fnt"));
+            glyphLayout.setText(game.wargate, "battle over hanover", game.wargate.getColor(), 0, Align.center, false);
+
             glyphLayoutSub = new GlyphLayout();
-            glyphLayoutSub.setText(wargateSubtitle, "Presiona espacio para continuar", wargateSubtitle.getColor(), 0, Align.center, false);
+            glyphLayoutSub.setText(game.wargateSubtitle, "Presiona espacio para continuar", game.wargateSubtitle.getColor(), 0, Align.center, false);
 
             Gdx.input.setInputProcessor(new InputAdapter() {
                 @Override
                 public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                    backgroundMusic.stop();
                     game.setScreen(new Main(game));
                     return true;
                 }
@@ -149,8 +148,8 @@ public class Title extends ScreenAdapter {
 
             batch.draw(airExplosion[airExplosionAnimation3], explosionX[5], explosionY[5]);
            // wargate.draw(batch, glyphLayout, game.fitViewport.getWorldWidth()/2, game.fitViewport.getWorldHeight()/2 + glyphLayout.height, game.WIDTH -10, glyphLayout.height);
-            wargate.draw(batch, "Battle over hanover", 0, 3*game.HEIGHT/4, game.WIDTH - 15, Align.center, true);
-            wargateSubtitle.draw(batch, "Toca la pantalla para continuar", 0, 3*game.HEIGHT/4 - 200, game.WIDTH - 20, Align.center, true);
+            game.wargate.draw(batch, "Battle over hanover", 0, 3*game.HEIGHT/4, game.WIDTH - 15, Align.center, true);
+            game.wargateSubtitle.draw(batch, "Toca la pantalla para continuar", 0, 3*game.HEIGHT/4 - 200, game.WIDTH - 20, Align.center, true);
             //wargateSubtitle.draw(batch, glyphLayoutSub, game.fitViewport.getWorldWidth()/2  , (game.fitViewport.getWorldHeight()/2 - glyphLayout.height + glyphLayoutSub.height/2));
             x++;
             if (x % 2 == 0) {
@@ -236,16 +235,13 @@ public class Title extends ScreenAdapter {
             batch.end();
         }
 
-
-
-
         @Override
         public void dispose() {
             batch.dispose();
             img.dispose();
             backgroundMusic.dispose();
-            wargate.dispose();
-            wargateSubtitle.dispose();
+            game.wargate.dispose();
+            game.wargateSubtitle.dispose();
         }
 
         public int calculateY() {
@@ -276,8 +272,6 @@ public class Title extends ScreenAdapter {
             batch.draw(clouds[0], cloudXPositions[14], cloudYPositions[14]);
 
         }
-
-
 
     @Override
     public void hide(){
