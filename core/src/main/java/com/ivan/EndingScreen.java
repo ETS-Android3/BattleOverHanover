@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.util.Locale;
 
 
@@ -102,8 +103,8 @@ public class EndingScreen extends ScreenAdapter {
         game.batch.setProjectionMatrix(game.camera.combined);
         game.batch.begin();
         game.batch.draw(groundBackground, 0 ,0 );
-        game.wargateSubtitle.draw(game.batch, String.format("\nTime: %.2f points: %d", gameTimeAFloat, gamePointAnInts), 0, 3*game.HEIGHT/4, game.WIDTH - 15, Align.center, true);
-        game.wargateSubtitle.draw(game.batch, "Toca la pantalla para continuar", 0, 3*game.HEIGHT/4 - 200, game.WIDTH - 20, Align.center, true);
+        game.wargate.draw(game.batch, String.format("Top Score\nTime: %s\nScore: %s", fileHandle.readString().split(" | ")[0], fileHandle.readString().split(" | ")[2]), 0, game.HEIGHT - 50, game.WIDTH, Align.center, true);
+        game.wargateSubtitle.draw(game.batch, "Toca la pantalla para continuar", 0, 3*game.HEIGHT/4 - 200, game.WIDTH - 40, Align.center, true);
         game.batch.end();
     }
 
