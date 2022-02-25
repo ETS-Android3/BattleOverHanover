@@ -119,7 +119,7 @@ public class Main extends ScreenAdapter {
 
 	private void updateScene(float delta){
 		gameTimeAFloat+= delta;
-		planeBoundingBox.set(planePositionVector.x+ game.BOX_ADJUSTMENT, planePositionVector.y+ game.BOX_ADJUSTMENT, planeTexture0.getRegionWidth()-(2*game.BOX_ADJUSTMENT), planeTexture0.getRegionHeight()-(2*game.BOX_ADJUSTMENT));
+		planeBoundingBox.set(planePositionVector.x+ game.BOX_ADJUSTMENT, planePositionVector.y+ game.BOX_ADJUSTMENT, planeTexture0.getRegionWidth()-(2*game.BOX_ADJUSTMENT), planeTexture0.getRegionHeight()-(4*game.BOX_ADJUSTMENT));
 
 		if (planePositionVector.y > (game.HEIGHT - aboveGrassTexture.getRegionHeight()) || planePositionVector.y < (belowGrassTexture.getRegionHeight())/2){
 			gameOver();
@@ -153,9 +153,9 @@ public class Main extends ScreenAdapter {
 		for (Vector2 shields : shieldPosition){
 			shields.x += game.TERRAIN_SPEED_PPS * Gdx.graphics.getDeltaTime();
 			if (shields.y == 1){
-				shieldBoundingBox.set(shields.x, game.HEIGHT/2, shield.getRegionWidth() - game.BOX_ADJUSTMENT, shield.getRegionHeight() - game.BOX_ADJUSTMENT);
+				shieldBoundingBox.set(shields.x, 1*game.HEIGHT/4, shield.getRegionWidth() - game.BOX_ADJUSTMENT, shield.getRegionHeight()/2);
 			} else {
-				shieldBoundingBox.set(shields.x, game.HEIGHT/2, shield.getRegionWidth() - game.BOX_ADJUSTMENT, shield.getRegionHeight() - game.BOX_ADJUSTMENT);
+				shieldBoundingBox.set(shields.x, 3*game.HEIGHT/4, shield.getRegionWidth() - game.BOX_ADJUSTMENT, shield.getRegionHeight()/2);
 			}
 			if (planeBoundingBox.overlaps(shieldBoundingBox)){
 				shieldTimeStamp = gameTimeAFloat;
@@ -199,9 +199,9 @@ public class Main extends ScreenAdapter {
 			}
 		}for (Vector2 shields : shieldPosition){
 			if (shields.y == 1){
-				game.batch.draw(shield, shields.x, game.HEIGHT/2);
+				game.batch.draw(shield, shields.x, 1*game.HEIGHT/4);
 			} else {
-				game.batch.draw(shield, shields.x, game.HEIGHT/2 - 20);
+				game.batch.draw(shield, shields.x, 3*game.HEIGHT/4 - 20);
 			}
 		}
 
