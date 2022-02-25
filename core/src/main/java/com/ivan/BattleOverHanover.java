@@ -1,8 +1,10 @@
 package com.ivan;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -28,6 +30,8 @@ public class BattleOverHanover extends Game {
     public static final float PILLAR_DISTANCE_RANGE = 100;
     public static final float NEW_PILLAR_CONTROLLER = WIDTH/4f;
     public static final int BOX_ADJUSTMENT = 10;
+    public BitmapFont wargate;
+    public BitmapFont wargateSubtitle;
 
 
     //Main Tittle
@@ -56,6 +60,8 @@ public class BattleOverHanover extends Game {
         camera = new OrthographicCamera();
         camera.position.set(WIDTH*0.5F, HEIGHT*0.5F, 0);
         fitViewport = new FitViewport(WIDTH, HEIGHT,camera);
+        wargate = new BitmapFont(Gdx.files.internal("wargatesubtitle.fnt"));
+        wargateSubtitle = new BitmapFont(Gdx.files.internal("WargateSubFont.fnt"));
         setScreen(new Title(this));
     }
 }
