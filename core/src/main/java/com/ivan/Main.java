@@ -24,7 +24,6 @@ public class Main extends ScreenAdapter {
 	private float backgroundOffset = 0;
 	private float damping = 0.99f;
 	private TextureRegion backgroundTextureRegion;
-	private FPSLogger fpsLogger;
 	private TextureRegion belowGrassTexture;
 	private TextureRegion aboveGrassTexture;
 
@@ -40,14 +39,19 @@ public class Main extends ScreenAdapter {
 	private Vector2 planeVelocity;
 	private TextureRegion pillarUp;
 	private TextureRegion pillarDown;
+	private TextureRegion shield;
 	private TextureAtlas usMustang;
 	private final Array<Vector2> pillarPosition = new Array<>();
 	private Vector2 lastPillarPosition;
+	private final Array<Vector2> shieldPosition = new Array<>();
+	private Vector2 shieldLastPosition;
 
 	private final Rectangle planeBoundingBox = new Rectangle();
 	private final Rectangle pillarBoundingBox = new Rectangle();
 	private final Rectangle pointBoundingBox = new Rectangle();
-	private int overlapsedPillarTime = 196;
+	private final Rectangle shieldBoundingBox = new Rectangle();
+	private float shieldTimeStamp;
+	private int overlapsedPillarTime;
 	private int overlapsedPillarPoints = 0;
 	private int gamePointAnInts = 0;
 
@@ -57,7 +61,6 @@ public class Main extends ScreenAdapter {
 
 	@Override
 	public void show() {
-		fpsLogger = new FPSLogger();
 		usMustang = new TextureAtlas("plane.pack");
 
 		textureAtlas = new TextureAtlas("ThrustCopter.pack");
@@ -69,6 +72,8 @@ public class Main extends ScreenAdapter {
 		pillarUp = new TextureRegion(new Texture("pillar.png"));
 		pillarDown = new TextureRegion(pillarUp);
 		pillarDown.flip(true, true);
+		overlapsedPillarTime = pillarDown.getRegionWidth();
+		shield = new TextureRegion(new Texture("health.png"));
 
 		planeTexture0 = usMustang.findRegion("plane0");
 		planeTexture0.flip(true, false);
@@ -87,6 +92,7 @@ public class Main extends ScreenAdapter {
 		planeVelocity = new Vector2();
 
 		addPillar();
+		addShield();
 
 		Gdx.input.setInputProcessor(new InputAdapter() {
 			@Override
@@ -106,7 +112,6 @@ public class Main extends ScreenAdapter {
 
 	@Override
 	public void render(float delta) {
-		fpsLogger.log();
 		updateScene(delta);
 		drawScene();
 	}
@@ -122,10 +127,10 @@ public class Main extends ScreenAdapter {
 		for (Vector2 pillar : pillarPosition){
 			pillar.x += game.TERRAIN_SPEED_PPS * Gdx.graphics.getDeltaTime();
 			if (pillar.y == 1){
-				pillarBoundingBox.set(pillar.x+ game.BOX_ADJUSTMENT, 0, pillarUp.getRegionWidth()-(2*game.BOX_ADJUSTMENT), pillarUp.getRegionHeight());
+				pillarBoundingBox.set(pillar.x+ game.BOX_ADJUSTMENT, 0, pillarUp.getRegionWidth()-(2*game.BOX_ADJUSTMENT), pillarUp.getRegionHeight() - 20);
 				pointBoundingBox.set(pillar.x, 0, 1, game.HEIGHT);
 			} else {
-				pillarBoundingBox.set(pillar.x+ game.BOX_ADJUSTMENT, game.HEIGHT - pillarUp.getRegionHeight(), pillarUp.getRegionWidth(), pillarUp.getRegionHeight());
+				pillarBoundingBox.set(pillar.x+ game.BOX_ADJUSTMENT, game.HEIGHT - pillarUp.getRegionHeight(), pillarUp.getRegionWidth(), pillarUp.getRegionHeight() -20);
 				pointBoundingBox.set(pillar.x, 0, 1, game.HEIGHT);
 			}
 			if (planeBoundingBox.overlaps(pillarBoundingBox)){
@@ -141,6 +146,25 @@ public class Main extends ScreenAdapter {
 		}
 		if (lastPillarPosition.x > game.NEW_PILLAR_CONTROLLER){
 			addPillar();
+		}
+
+		for (Vector2 shields : shieldPosition){
+			shields.x += game.TERRAIN_SPEED_PPS * Gdx.graphics.getDeltaTime();
+			if (shields.y == 1){
+				shieldBoundingBox.set(shields.x, game.HEIGHT/2, shield.getRegionWidth() - game.BOX_ADJUSTMENT, shield.getRegionHeight() - game.BOX_ADJUSTMENT);
+			} else {
+				shieldBoundingBox.set(shields.x, game.HEIGHT/2, shield.getRegionWidth() - game.BOX_ADJUSTMENT, shield.getRegionHeight() - game.BOX_ADJUSTMENT);
+			}
+			if (planeBoundingBox.overlaps(shieldBoundingBox)){
+				shieldTimeStamp = gameTimeAFloat;
+				shieldPosition.removeValue(shields, false);
+			}
+			if (shields.x > game.WIDTH + shield.getRegionWidth()){
+				shieldPosition.removeValue(shields, false);
+			}
+		}
+		if (shieldLastPosition.x > game.NEW_SHIELD_CONTROLLER){
+			addShield();
 		}
 
 		planeVelocity.add(gravity);
@@ -170,6 +194,12 @@ public class Main extends ScreenAdapter {
 				game.batch.draw(pillarUp, pillar.x, 0);
 			} else {
 				game.batch.draw(pillarDown, pillar.x, game.HEIGHT - pillarDown.getRegionHeight());
+			}
+		}for (Vector2 shields : shieldPosition){
+			if (shields.y == 1){
+				game.batch.draw(shield, shields.x, game.HEIGHT/2);
+			} else {
+				game.batch.draw(shield, shields.x, game.HEIGHT/2 - 20);
 			}
 		}
 
@@ -212,9 +242,25 @@ public class Main extends ScreenAdapter {
 
 		pillarPosition.add(tmpPosition);
 	}
+	private void addShield(){
+		Vector2 tmpPosition = new Vector2();
+		if (shieldPosition.size == 0){
+			tmpPosition.x =  -(10 + (float) (game.SHIELD_DISTANCE_RANGE *  Math.random()));
+		} else {
+			tmpPosition.x = -(shieldLastPosition.x +  game.MIN_SHIELD_DISTANCE + (float) (game.SHIELD_DISTANCE_RANGE *  Math.random()));
+		}
+		if (MathUtils.randomBoolean()){
+			tmpPosition.y = 1;
+		} else {
+			tmpPosition.y = -1;
+		}
+		shieldLastPosition = tmpPosition;
+		System.out.println(shieldLastPosition.toString());
+
+		shieldPosition.add(tmpPosition);
+	}
 
 	private void gameOver(){
-	 	Gdx.app.log("Game", "Over");
 	 	game.setScreen(new EndingScreen(game, gameTimeAFloat, gamePointAnInts));
 	}
 
