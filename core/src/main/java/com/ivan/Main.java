@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 public class Main extends ScreenAdapter {
@@ -45,6 +46,10 @@ public class Main extends ScreenAdapter {
 
 	private final Rectangle planeBoundingBox = new Rectangle();
 	private final Rectangle pillarBoundingBox = new Rectangle();
+	private final Rectangle pointBoundingBox = new Rectangle();
+	private int overlapsedPillarTime = 196;
+	private int overlapsedPillarPoints = 0;
+	private int gamePointAnInts = 0;
 
 	public Main(BattleOverHanover _game) {
 		game = _game;
@@ -53,8 +58,6 @@ public class Main extends ScreenAdapter {
 	@Override
 	public void show() {
 		fpsLogger = new FPSLogger();
-
-
 		usMustang = new TextureAtlas("plane.pack");
 
 		textureAtlas = new TextureAtlas("ThrustCopter.pack");
@@ -93,6 +96,7 @@ public class Main extends ScreenAdapter {
 			}
 		});
 
+
 	}
 
 	@Override
@@ -119,21 +123,24 @@ public class Main extends ScreenAdapter {
 			pillar.x += game.TERRAIN_SPEED_PPS * Gdx.graphics.getDeltaTime();
 			if (pillar.y == 1){
 				pillarBoundingBox.set(pillar.x+ game.BOX_ADJUSTMENT, 0, pillarUp.getRegionWidth()-(2*game.BOX_ADJUSTMENT), pillarUp.getRegionHeight());
+				pointBoundingBox.set(pillar.x, 0, 1, game.HEIGHT);
 			} else {
-				pillarBoundingBox.set(pillar.x, game.HEIGHT - pillarUp.getRegionHeight(), pillarUp.getRegionWidth(), pillarUp.getRegionHeight());
+				pillarBoundingBox.set(pillar.x+ game.BOX_ADJUSTMENT, game.HEIGHT - pillarUp.getRegionHeight(), pillarUp.getRegionWidth(), pillarUp.getRegionHeight());
+				pointBoundingBox.set(pillar.x, 0, 1, game.HEIGHT);
 			}
 			if (planeBoundingBox.overlaps(pillarBoundingBox)){
-				//Gameover
 				gameOver();
+			}
+			if (planeBoundingBox.overlaps(pointBoundingBox)){
+				overlapsedPillarPoints +=1;
+				gamePointAnInts = overlapsedPillarPoints/overlapsedPillarTime;
 			}
 			if (pillar.x > game.WIDTH + pillarUp.getRegionWidth()){
 				pillarPosition.removeValue(pillar, false);
-				System.out.println("deleted"); //Log for deleted pillars
 			}
 		}
 		if (lastPillarPosition.x > game.NEW_PILLAR_CONTROLLER){
 			addPillar();
-			System.out.println("addPillar"); //Log for created pillars
 		}
 
 		planeVelocity.add(gravity);
@@ -174,6 +181,9 @@ public class Main extends ScreenAdapter {
 
 		game.batch.draw(planeAnimation.getKeyFrame(planeAnimTime), planePositionVector.x, planePositionVector.y);
 
+		game.wargateSubtitle.draw(game.batch, String.format("Time: %.2f", gameTimeAFloat), 0, game.HEIGHT -5 );
+
+		game.wargateSubtitle.draw(game.batch, String.format("Points: %d", gamePointAnInts), game.WIDTH -350, game.HEIGHT -5 );
 
 		game.batch.end();
 	}
@@ -202,9 +212,6 @@ public class Main extends ScreenAdapter {
 
 		pillarPosition.add(tmpPosition);
 	}
-
-
-
 
 	private void gameOver(){
 	 	Gdx.app.log("Game", "Over");
