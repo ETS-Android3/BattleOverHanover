@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -17,16 +18,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class Main extends ScreenAdapter {
-	public static final float WIDTH = 800;
-	public static final float HEIGHT = 580;
-	private static final float TERRAIN_SPEED_PPS = 100f;
-	private static final float BACKGROUND_SPEED_PPS = 50f;
-	public static final float PLANE_TAP_SPEED = 200f;
-	public static final float GRAVITY_SPEED = -9.81f;
-	private static final float MIN_PILLAR_DISTANCE = WIDTH/8f;
-	private static final float PILLAR_DISTANCE_RANGE = 100;
-	private static final float NEW_PILLAR_CONTROLLER = WIDTH/4f;
-	public static final int BOX_ADJUSTMENT = 10;
+
+	
 	private final BattleOverHanover game;
 	private float terrainOffset = 0;
 	private float planeAnimTime;
@@ -35,7 +28,6 @@ public class Main extends ScreenAdapter {
 	private SpriteBatch batch;
 	private TextureRegion backgroundTextureRegion;
 	private FPSLogger fpsLogger;
-	private FitViewport fitViewport;
 	private TextureRegion belowGrassTexture;
 	private TextureRegion aboveGrassTexture;
 
@@ -71,8 +63,8 @@ public class Main extends ScreenAdapter {
 		usMustang = new TextureAtlas("plane.pack");
 
 		textureAtlas = new TextureAtlas("ThrustCopter.pack");
-		backgroundTextureRegion = textureAtlas.findRegion("background");
-		belowGrassTexture = textureAtlas.findRegion("groundGrass");
+		backgroundTextureRegion = new TextureRegion(new Texture("background.png"));
+		belowGrassTexture = new TextureRegion(new Texture("road.png"));
 		aboveGrassTexture = new TextureRegion(belowGrassTexture);
 		aboveGrassTexture.flip(true, true);
 
@@ -89,10 +81,10 @@ public class Main extends ScreenAdapter {
 		planeAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
 		defaultPlanePositionVector = new Vector2(
-				WIDTH/4*3-planeTexture0.getRegionWidth()/2,
-				HEIGHT/2-planeTexture0.getRegionHeight()/2);
+				game.WIDTH/4*3-planeTexture0.getRegionWidth()/2,
+				game.HEIGHT/2-planeTexture0.getRegionHeight()/2);
 		planePositionVector = new Vector2(defaultPlanePositionVector);
-		gravity = new Vector2(0, GRAVITY_SPEED);
+		gravity = new Vector2(0, game.GRAVITY_SPEED);
 		planeVelocity = new Vector2();
 
 		addPillar();
@@ -100,7 +92,7 @@ public class Main extends ScreenAdapter {
 		Gdx.input.setInputProcessor(new InputAdapter() {
 			@Override
 			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-				planeVelocity.add(0, PLANE_TAP_SPEED);
+				planeVelocity.add(0, game.PLANE_TAP_SPEED);
 				return true;
 			}
 		});
@@ -120,28 +112,28 @@ public class Main extends ScreenAdapter {
 	}
 
 	private void updateScene(){
-		planeBoundingBox.set(planePositionVector.x+ BOX_ADJUSTMENT, planePositionVector.y+ BOX_ADJUSTMENT, planeTexture0.getRegionWidth()-(2*BOX_ADJUSTMENT), planeTexture0.getRegionHeight()-(2*BOX_ADJUSTMENT));
+		planeBoundingBox.set(planePositionVector.x+ game.BOX_ADJUSTMENT, planePositionVector.y+ game.BOX_ADJUSTMENT, planeTexture0.getRegionWidth()-(2*game.BOX_ADJUSTMENT), planeTexture0.getRegionHeight()-(2*game.BOX_ADJUSTMENT));
 
-		if (planePositionVector.y > (HEIGHT - aboveGrassTexture.getRegionHeight()) || planePositionVector.y < (belowGrassTexture.getRegionHeight())/2){
+		if (planePositionVector.y > (game.HEIGHT - aboveGrassTexture.getRegionHeight()) || planePositionVector.y < (belowGrassTexture.getRegionHeight())/2){
 			gameOver();
 		}
 		for (Vector2 pillar : pillarPosition){
-			pillar.x += TERRAIN_SPEED_PPS * Gdx.graphics.getDeltaTime();
+			pillar.x += game.TERRAIN_SPEED_PPS * Gdx.graphics.getDeltaTime();
 			if (pillar.y == 1){
-				pillarBoundingBox.set(pillar.x+ BOX_ADJUSTMENT, 0, pillarUp.getRegionWidth()-(2*BOX_ADJUSTMENT), pillarUp.getRegionHeight());
+				pillarBoundingBox.set(pillar.x+ game.BOX_ADJUSTMENT, 0, pillarUp.getRegionWidth()-(2*game.BOX_ADJUSTMENT), pillarUp.getRegionHeight());
 			} else {
-				pillarBoundingBox.set(pillar.x, HEIGHT - pillarUp.getRegionHeight(), pillarUp.getRegionWidth(), pillarUp.getRegionHeight());
+				pillarBoundingBox.set(pillar.x, game.HEIGHT - pillarUp.getRegionHeight(), pillarUp.getRegionWidth(), pillarUp.getRegionHeight());
 			}
 			if (planeBoundingBox.overlaps(pillarBoundingBox)){
 				//Gameover
 				gameOver();
 			}
-			if (pillar.x > WIDTH + pillarUp.getRegionWidth()){
+			if (pillar.x > game.WIDTH + pillarUp.getRegionWidth()){
 				pillarPosition.removeValue(pillar, false);
 				System.out.println("deleted"); //Log for deleted pillars
 			}
 		}
-		if (lastPillarPosition.x > NEW_PILLAR_CONTROLLER){
+		if (lastPillarPosition.x > game.NEW_PILLAR_CONTROLLER){
 			addPillar();
 			System.out.println("addPillar"); //Log for created pillars
 		}
@@ -150,11 +142,11 @@ public class Main extends ScreenAdapter {
 		planeVelocity.scl(damping);
 		planePositionVector.mulAdd(planeVelocity, Gdx.graphics.getDeltaTime());
 		planeAnimTime += Gdx.graphics.getDeltaTime();
-		terrainOffset+= TERRAIN_SPEED_PPS * Gdx.graphics.getDeltaTime();
+		terrainOffset+= game.TERRAIN_SPEED_PPS * Gdx.graphics.getDeltaTime();
 		if (terrainOffset >= belowGrassTexture.getRegionWidth()){
 			terrainOffset = 0;
 		}
-		backgroundOffset+= BACKGROUND_SPEED_PPS * Gdx.graphics.getDeltaTime();
+		backgroundOffset+= game.BACKGROUND_SPEED_PPS * Gdx.graphics.getDeltaTime();
 		if (backgroundOffset >= backgroundTextureRegion.getRegionWidth()){
 			backgroundOffset = 0;
 		}
@@ -171,14 +163,14 @@ public class Main extends ScreenAdapter {
 			if (pillar.y == 1){
 				batch.draw(pillarUp, pillar.x, 0);
 			} else {
-				batch.draw(pillarDown, pillar.x, HEIGHT - pillarDown.getRegionHeight());
+				batch.draw(pillarDown, pillar.x, game.HEIGHT - pillarDown.getRegionHeight());
 			}
 		}
 
 		batch.draw(belowGrassTexture, terrainOffset, 0);
 		batch.draw(belowGrassTexture, terrainOffset - belowGrassTexture.getRegionWidth(), 0);
-		batch.draw(aboveGrassTexture, terrainOffset, HEIGHT-aboveGrassTexture.getRegionHeight());
-		batch.draw(aboveGrassTexture, terrainOffset - aboveGrassTexture.getRegionWidth(), HEIGHT-aboveGrassTexture.getRegionHeight());
+		batch.draw(aboveGrassTexture, terrainOffset, game.HEIGHT-aboveGrassTexture.getRegionHeight());
+		batch.draw(aboveGrassTexture, terrainOffset - aboveGrassTexture.getRegionWidth(), game.HEIGHT-aboveGrassTexture.getRegionHeight());
 
 		batch.draw(planeAnimation.getKeyFrame(planeAnimTime), planePositionVector.x, planePositionVector.y);
 		batch.end();
@@ -194,9 +186,9 @@ public class Main extends ScreenAdapter {
 	private void addPillar(){
 		Vector2 tmpPosition = new Vector2();
 		if (pillarPosition.size == 0){
-			tmpPosition.x =  -(MIN_PILLAR_DISTANCE + (float) (PILLAR_DISTANCE_RANGE *  Math.random()));
+			tmpPosition.x =  -(game.MIN_PILLAR_DISTANCE + (float) (game.PILLAR_DISTANCE_RANGE *  Math.random()));
 		} else {
-			tmpPosition.x = -(lastPillarPosition.x +  MIN_PILLAR_DISTANCE + (float) (PILLAR_DISTANCE_RANGE *  Math.random()));
+			tmpPosition.x = -(lastPillarPosition.x +  game.MIN_PILLAR_DISTANCE + (float) (game.PILLAR_DISTANCE_RANGE *  Math.random()));
 		}
 		if (MathUtils.randomBoolean()){
 			tmpPosition.y = 1;
