@@ -3,6 +3,7 @@ package com.ivan;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
@@ -16,6 +17,17 @@ public class BattleOverHanover extends Game {
     public static final float HEIGHT = 580;
     public OrthographicCamera camera;
     public FitViewport fitViewport;
+    public SpriteBatch batch;
+
+    //Constants
+    public static final float TERRAIN_SPEED_PPS = 100f;
+    public static final float BACKGROUND_SPEED_PPS = 50f;
+    public static final float PLANE_TAP_SPEED = 200f;
+    public static final float GRAVITY_SPEED = -9.81f;
+    public static final float MIN_PILLAR_DISTANCE = WIDTH/8f;
+    public static final float PILLAR_DISTANCE_RANGE = 100;
+    public static final float NEW_PILLAR_CONTROLLER = WIDTH/4f;
+    public static final int BOX_ADJUSTMENT = 10;
 
 
     //Main Tittle
@@ -40,6 +52,7 @@ public class BattleOverHanover extends Game {
 
     @Override
     public void create() {
+        batch = new SpriteBatch();
         camera = new OrthographicCamera();
         camera.position.set(WIDTH*0.5F, HEIGHT*0.5F, 0);
         fitViewport = new FitViewport(WIDTH, HEIGHT,camera);
