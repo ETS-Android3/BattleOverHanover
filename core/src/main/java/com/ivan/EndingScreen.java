@@ -39,7 +39,6 @@ public class EndingScreen extends ScreenAdapter {
         fileHandle = Gdx.files.local("data.txt");
         if (fileHandle.exists()){
             String[] tempValuesArray = fileHandle.readString().split(" | ");
-            System.out.println(tempValuesArray[0] + " " + gameTimeAFloat);
             if (Integer.parseInt(tempValuesArray[2]) <= gamePointAnInts){
                 //if (Float.parseFloat(tempValuesArray[0]) > gameTimeAFloat){
                     fileHandle.writeString(String.format(Locale.ROOT,"%.2f | %d", gameTimeAFloat, gamePointAnInts), false);
