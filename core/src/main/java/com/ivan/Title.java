@@ -27,7 +27,6 @@ public class Title extends ScreenAdapter {
     }
 
         SpriteBatch batch;
-        Texture img;
         Texture stuka;
         Texture[] usBomber = new Texture[4];
         Texture[] usMustang = new Texture[8];
@@ -40,14 +39,11 @@ public class Title extends ScreenAdapter {
         Texture[] airExplosion = new Texture[26];
         Texture fence;
         Texture moon;
-        Texture[] touchToContinue = new Texture[3];
         int x = 0;
         int airExplosionAnimation = 1;
         int airExplosionAnimation2 = 1;
         int airExplosionAnimation3 = 1;
         int breachX = 0;
-        int y = 250;
-        int X = 20;
         int groundPosition = 200;
         int bomberAnimation = 0;
         int fighterPlaneAnimation = 0;
@@ -60,7 +56,6 @@ public class Title extends ScreenAdapter {
         int[] explosionX;
         public static Music backgroundMusic;
         public Sound explosionSound;
-        private int continueAnimation = 0;
         private GlyphLayout glyphLayout;
         private GlyphLayout glyphLayoutSub;
 
@@ -237,11 +232,6 @@ public class Title extends ScreenAdapter {
 
         @Override
         public void dispose() {
-            batch.dispose();
-            img.dispose();
-            backgroundMusic.dispose();
-            game.wargate.dispose();
-            game.wargateSubtitle.dispose();
         }
 
         public int calculateY() {
