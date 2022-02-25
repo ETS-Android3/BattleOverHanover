@@ -22,13 +22,15 @@ public class BattleOverHanover extends Game {
     public SpriteBatch batch;
 
     //Constants
-    public static final float TERRAIN_SPEED_PPS = 100f;
+    public static final float TERRAIN_SPEED_PPS = 150f;
     public static final float BACKGROUND_SPEED_PPS = 50f;
     public static final float PLANE_TAP_SPEED = 200f;
     public static final float GRAVITY_SPEED = -9.81f;
     public static final float MIN_PILLAR_DISTANCE = WIDTH/8f;
     public static final float PILLAR_DISTANCE_RANGE = 100;
+    public static final float SHIELD_DISTANCE_RANGE = 100;
     public static final float NEW_PILLAR_CONTROLLER = WIDTH/4f;
+    public static final float NEW_SHIELD_CONTROLLER = WIDTH/4f;
     public static final int BOX_ADJUSTMENT = 10;
     public BitmapFont wargate;
     public BitmapFont wargateSubtitle;
