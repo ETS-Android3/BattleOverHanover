@@ -215,7 +215,7 @@ public class Main extends ScreenAdapter {
 
 	private void gameOver(){
 	 	Gdx.app.log("Game", "Over");
-	 	game.setScreen(new Title(game));
+	 	game.setScreen(new EndingScreen(game, gameTimeAFloat, gamePointAnInts));
 	}
 
 
