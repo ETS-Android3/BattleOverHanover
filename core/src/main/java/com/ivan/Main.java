@@ -3,7 +3,6 @@ package com.ivan;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -12,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 public class Main extends ScreenAdapter {
@@ -51,9 +49,10 @@ public class Main extends ScreenAdapter {
 	private final Rectangle pointBoundingBox = new Rectangle();
 	private final Rectangle shieldBoundingBox = new Rectangle();
 	private float shieldTimeStamp;
-	private int overlapsedPillarTime;
-	private int overlapsedPillarPoints = 0;
+	private int overlappedPillarTime;
+	private int overlappedPillarPoints = 0;
 	private int gamePointAnInts = 0;
+	private boolean hasShield;
 
 	public Main(BattleOverHanover _game) {
 		game = _game;
@@ -72,7 +71,7 @@ public class Main extends ScreenAdapter {
 		pillarUp = new TextureRegion(new Texture("pillar.png"));
 		pillarDown = new TextureRegion(pillarUp);
 		pillarDown.flip(true, true);
-		overlapsedPillarTime = pillarDown.getRegionWidth();
+		overlappedPillarTime = pillarDown.getRegionWidth();
 		shield = new TextureRegion(new Texture("health.png"));
 
 		planeTexture0 = usMustang.findRegion("plane0");
@@ -134,13 +133,13 @@ public class Main extends ScreenAdapter {
 				pointBoundingBox.set(pillar.x, 0, 1, game.HEIGHT);
 			}
 			if (planeBoundingBox.overlaps(pillarBoundingBox)){
-				if (shieldTimeStamp+ game.SHIELD_HEALTH_TIME < gameTimeAFloat){
+				if (shieldTimeStamp + game.SHIELD_HEALTH_TIME < gameTimeAFloat){
 					gameOver();
 				}
 			}
 			if (planeBoundingBox.overlaps(pointBoundingBox)){
-				overlapsedPillarPoints +=1;
-				gamePointAnInts = overlapsedPillarPoints/overlapsedPillarTime;
+				overlappedPillarPoints +=1;
+				gamePointAnInts = overlappedPillarPoints / overlappedPillarTime;
 			}
 			if (pillar.x > game.WIDTH + pillarUp.getRegionWidth()){
 				pillarPosition.removeValue(pillar, false);
@@ -148,6 +147,9 @@ public class Main extends ScreenAdapter {
 		}
 		if (lastPillarPosition.x > game.NEW_PILLAR_CONTROLLER){
 			addPillar();
+		}
+		if (hasShield && gameTimeAFloat - shieldTimeStamp > game.SHIELD_HEALTH_TIME){
+			hasShield = false;
 		}
 
 		for (Vector2 shields : shieldPosition){
@@ -159,6 +161,7 @@ public class Main extends ScreenAdapter {
 			}
 			if (planeBoundingBox.overlaps(shieldBoundingBox)){
 				shieldTimeStamp = gameTimeAFloat;
+				hasShield = true;
 				shieldPosition.removeValue(shields, false);
 			}
 			if (shields.x > game.WIDTH + shield.getRegionWidth()){
@@ -211,7 +214,12 @@ public class Main extends ScreenAdapter {
 		game.batch.draw(aboveGrassTexture, terrainOffset - aboveGrassTexture.getRegionWidth(), game.HEIGHT-aboveGrassTexture.getRegionHeight());
 
 
+
 		game.batch.draw(planeAnimation.getKeyFrame(planeAnimTime), planePositionVector.x, planePositionVector.y);
+
+		if (hasShield){
+			game.wargateSubtitle.draw(game.batch, String.format("INVENCIBILIDAD %.2f", (shieldTimeStamp + game.SHIELD_HEALTH_TIME) - gameTimeAFloat), 0, game.HEIGHT - game.wargateSubtitle.getRegion().getRegionHeight() - 15);
+		}
 
 		game.wargateSubtitle.draw(game.batch, String.format("Time: %.2f", gameTimeAFloat), 0, game.HEIGHT -5 );
 
